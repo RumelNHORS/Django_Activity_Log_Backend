@@ -23,11 +23,29 @@ class ProductSerializer(serializers.ModelSerializer):
         
 
 class ActivityLogSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField() 
-    product = serializers.StringRelatedField()
-    product_owner = serializers.CharField(source='product.user.username', read_only=True)
-
+    user = serializers.StringRelatedField()
+    product_name = serializers.SerializerMethodField()
+    product_owner = serializers.SerializerMethodField()
 
     class Meta:
         model = ActivityLog
         fields = '__all__'
+
+    def get_product_name(self, obj):
+        """Extract product name from the changes field."""
+        if obj.model_name == "Product":
+            return obj.changes.get('fields', {}).get('name', None)
+        return None
+
+    def get_product_owner(self, obj):
+        """Fetch product owner if model is Product"""
+        if obj.model_name == "Product":
+            product_id = obj.changes.get('fields', {}).get('id')
+            if product_id:
+                try:
+                    product = Product.objects.get(id=product_id)
+                    return product.user.username
+                except Product.DoesNotExist:
+                    return None
+        return None
+

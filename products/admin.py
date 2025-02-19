@@ -5,3 +5,4 @@ from products import models as product_models
 
 admin.site.register(product_models.ActivityLog)
 admin.site.register(product_models.Product)
+admin.site.register(product_models.ProductPrice)
