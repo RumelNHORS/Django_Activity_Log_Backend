@@ -3,7 +3,6 @@ from .models import Product, ActivityLog
 from django.contrib.auth.models import User
 
 
-
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -26,6 +25,8 @@ class ProductSerializer(serializers.ModelSerializer):
 class ActivityLogSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField() 
     product = serializers.StringRelatedField()
+    product_owner = serializers.CharField(source='product.user.username', read_only=True)
+
 
     class Meta:
         model = ActivityLog
